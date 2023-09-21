@@ -1,0 +1,41 @@
+/* Product.css */
+
+
+   /* CSS */
+   .product-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Create a 3-column grid */
+    gap: 20px; /* Adjust the gap between items */
+  }
+  
+  /* For larger screens, use a media query to switch to a 6-column grid */
+  @media (min-width: 768px) {
+    .product-list {
+      grid-template-columns: repeat(6, 1fr); /* Create a 6-column grid */
+    }
+  }
+  
+  /* For larger screens, use a media query to switch to a 6-column grid */
+  
+  .product-item {
+    width: calc(20% - 20px); /* 20% width with some margin between items */
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .product-item img {
+    width: 100%; /* Set a fixed width of 100% to fit within the product-item div */
+    height: 100%; /* Set a fixed height of 100% to maintain aspect ratio */
+    object-fit: cover; /* Maintain aspect ratio while covering the entire container */
+  }
+  
+  /* Media query for responsiveness */
+  @media (max-width: 768px) {
+    .product-item {
+      width: calc(33.33% - 20px); /* For smaller screens, show 3 items per row */
+    }
+  }
+  
