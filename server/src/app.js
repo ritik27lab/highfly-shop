@@ -1,92 +1,3 @@
-// const express = require("express");
-// const cors = require("cors"); // Import the cors middleware
-// const multer = require("multer");
-// const path = require("path");
-// const User = require("./models/users");
-
-// var app = express();
-
-// app.use(express.json());
-
-// // app.use(cors());
-// app.use(
-//   cors({
-//     origin: "http://localhost:3000",
-//   })
-// );
-
-// const upload = multer({
-//   storage: storage,
-// });
-
-// app.post("/user", (req, res) => {
-//   console.log("USER DATA", req.body);
-//   const user = new User(req.body);
-//   user
-//     .save()
-//     .then(() => {
-//       res.send(user);
-//     })
-//     .catch((err) => {
-//       res.send(err);
-//     });
-// });
-
-// // Create a new user
-// app.post("/user", upload.single("file"), (req, res) => {
-//   console.log("USER DATA", req.body);
-//   console.log("SERVER DATA", req.file);
-
-//   const user = new User(req.body);
-//   user
-//     .save()
-//     .then(() => {
-//       res.send(user);
-//     })
-//     .catch((err) => {
-//       res.send(err);
-//     });
-// });
-
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, "public/Images");
-//   },
-//   filename: (req, file, cb) => {
-//     cd(
-//       null,
-//       file.fieldname + "_" + Date.now() + path.extName(file.originalname)
-//     );
-//   },
-// });
-
-// // app.post("upload", upload.single("file"), (req, res) => {
-// //   // console.log("SERVER DATA", req.file);
-// //   // User.create(image: req.file)
-// // });
-
-// // app.put("/user/:id", (req, res) => {
-// //   const userId = req.params.id;
-// //   const userData = req.body; // Updated user data
-
-// //   // Assuming you have a User model with a findByIdAndUpdate function
-// //   User.({}) // { new: true } returns the updated document
-// //     .then((updatedUser) => {
-// //       console.log("USER--DOOOM-->", updatedUser, userData);
-// //       if (!updatedUser) {
-// //         return res.status(404).send("User not found");
-// //       }
-// //       res.json(updatedUser);
-// //     })
-// //     .catch((err) => {
-// //       res.status(500).send("Error updating user");
-// //     });
-// // });
-
-// app.listen(PORT, () => {
-//   console.log("Listening on port at-->", PORT);
-// });
-
 const express = require("express");
 const app = express();
 require("./db/connection");
@@ -95,6 +6,9 @@ const multer = require("multer");
 const path = require("path");
 const User = require("./models/users");
 const Image = require("./models/image");
+
+const { signIn } = require("./userlogin/userLogin");
+const { signUp } = require("./userlogin/userLogin");
 
 app.use(express.static(path.join(__dirname, "upload")));
 
@@ -111,6 +25,7 @@ app.use(cors());
 // );
 
 // Multer configuration for image upload
+
 const storage = multer.diskStorage({
   destination: "./src/uploads/", // Where to store uploaded files
   filename: (req, file, callback) => {
@@ -121,36 +36,39 @@ const storage = multer.diskStorage({
   },
 });
 
+app.post("/signUp", signUp);
+app.post("/signIn", signIn);
+
 const upload = multer({ storage });
 
 // Handle image upload
-// app.post("/user", upload.single("image"), async (req, res) => {
-//   // try {
-//   //   if (!req.file) {
-//   //     return res.status(400).send("No files were uploaded.");
-//   //   }
+app.post("/createUser", async (req, res) => {
+  try {
+    // Check if a user with the same email already exists
+    const existingUser = await User.findOne({ email: req.body.email });
 
-//   // const { filename, path } = req.file;
+    if (existingUser) {
+      return res.status(400).json({ error: "Email already taken" });
+    }
 
-//   // You can save the image metadata to MongoDB here if needed
+    // Create the userData object
+    const userData = {
+      name: req.body.name,
+      email: req.body.email,
+      phoneNumber: req.body.phoneNumber,
+      address: req.body.address,
+      // You can include image handling code here if needed
+    };
 
-//   const userData = {
-//     name: req.body.name,
-//     email: req.body.email,
-//     phoneNumber: req.body.phoneNumber,
-//     address: req.body.address,
-//     image: "filename", // Store the image filename in the user data
-//   };
+    const user = new User(userData);
 
-//   const user = new User(userData);
-
-//   await user.save();
-//   return res.json({ message: "User created successfully", user });
-//   // } catch (error) {
-//   //   console.error(error);
-//   //   return res.status(500).json({ error: "Server error" });
-//   // }
-// });
+    await user.save();
+    return res.json({ message: "User created successfully", user });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Server error" });
+  }
+});
 
 app.post("/upload-image", upload.single("image"), async (req, res) => {
   console.log(req.body);
@@ -161,6 +79,44 @@ app.post("/upload-image", upload.single("image"), async (req, res) => {
     res.json({ status: "ok" });
   } catch (error) {
     res.json({ status: error });
+  }
+});
+
+app.delete("/api/users/:id", async (req, res) => {
+  try {
+    const deleteUser = await User.findByIdAndDelete(req.params.id);
+    if (!req.params.id) {
+      return res.status(404).send;
+    }
+    res.send(deleteUser);
+  } catch (e) {
+    res.status(500).send(e);
+  }
+});
+
+app.get("/api/users/:id", async (req, res) => {
+  try {
+    const _id = req.params.id;
+    const userData = await User.findById(_id);
+    console.log(userData);
+    if (!userData) {
+      return res.status(404).send();
+    } else {
+      res.send(userData);
+    }
+  } catch (e) {
+    res.status(500).send(e);
+  }
+});
+
+//update the students by id
+app.patch("/api/users/:id", async (req, res) => {
+  try {
+    const _id = req.params.id;
+    const updateUserData = await User.findByIdAndUpdate(_id, req.body);
+    res.send(updateUserData);
+  } catch (e) {
+    res.status(404).send(updateUserData);
   }
 });
 
@@ -189,6 +145,7 @@ app.get("/get-image", async (req, res) => {
 
 // Define your API routes here, for example:
 app.get("/api/users", async (req, res) => {
+  //working get API request
   try {
     const users = await User.find();
     res.json(users);
@@ -197,6 +154,8 @@ app.get("/api/users", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
+//login and sign up api with token
 
 // Start the Express server
 const PORT = process.env.PORT || 8000;
