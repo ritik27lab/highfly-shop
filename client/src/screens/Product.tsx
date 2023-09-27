@@ -59,7 +59,7 @@ function Product() {
                 <h1>Shopping Cart</h1>
                 <img
                     // src={item.thumbnail}
-                    onClick={() => navigate('/ProductDetail')}
+                    onClick={() => navigate('/HomePage')}
 
                     src={gfg}
                     style={{ height: '50px', width: '50px', borderRadius: 25 }}

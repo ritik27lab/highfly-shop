@@ -6,6 +6,7 @@ import Product from './screens/Product';
 import DeliveryPage from './screens/DeliveryPage';
 import './App.css';
 import ProductDetail from './screens/ProductDetail';
+import HomePage from './screens/HomePage';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/" element={<Product />} />
           <Route path="/products" element={<Product />} />
           <Route path="/productdetail" element={<ProductDetail />} />
+          <Route path="/HomePage" element={<HomePage />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/delivery" element={<DeliveryPage />} />
           {/* Add more routes as needed */}

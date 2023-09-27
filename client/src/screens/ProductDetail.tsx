@@ -201,12 +201,7 @@ function ProductDetail() {
                                     alt="Avatar" className="my-5" style={{ width: '80px', height: '80px', borderRadius: '40px', borderWidth: 50, borderColor: 'red', marginTop: 50 }} />
 
                                 <MDBTypography tag="h5">Marie Horwitz</MDBTypography>
-                                {/* <input type="file" accept="image/*" onChange={handleImageChange} /> */}
-                                {/* <button onClick={() => handleImageChange()}>Upload Image</button> */}
-                                {/* <MDBCardText>Web Designer</MDBCardText> */}
-                                {/* <button onClick={handleSubmit}>Update the data</button> */}
-                                {/* <button onClick={handleSubmit}>Update the data</button> */}
-                                {/* <button onClick={handleSubmit}>Update the data to local storage</button> */}
+                      
                                 <MDBIcon far icon="edit mb-5" />
                             </div>
 
