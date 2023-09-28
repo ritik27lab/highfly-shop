@@ -1,8 +1,6 @@
 import React,{useState} from 'react';
 import { ReactComponent as Delete } from '../assets/svg/delete.svg'
 
-
-
 interface Section {
   id: number;
 }
@@ -35,13 +33,6 @@ const Component: React.FC<{
   );
 };                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 
-
-
-
-
-
-
-=\3=-403203420,3.  vnbcvbnmx,vbnldkafdhfeiueru408375.,-. ≤xwdew 01= 94  °
 
 const HomePage = () => {
   const [components, setComponents] = useState<ComponentType[]>([{ index: 1, sections: [] }]);
