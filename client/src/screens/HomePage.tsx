@@ -1,4 +1,5 @@
 import React,{useState} from 'react';
+import { ReactComponent as Close } from '../assets/svg/close.svg'
 import { ReactComponent as Delete } from '../assets/svg/delete.svg'
 
 interface Section {
@@ -10,31 +11,86 @@ interface ComponentType {
   sections: Section[];
 }
 
-const Component: React.FC<{
+
+const Component = ({
+  component,
+  onDeleteComponent,
+  onAddSection,
+  onDeleteSection,
+}: {
+  
   component: ComponentType;
   onDeleteComponent: () => void;
   onAddSection: () => void;
   onDeleteSection: (sectionIndex: number) => void;
-}> = ({ component, onDeleteComponent, onAddSection, onDeleteSection }) => {
+
+
+  
+}) => {
+
+  const [sectionInputs, setSectionInputs] = useState<string[]>([]);
+
+  const handleAddInputField = (sectionIndex: number) => {
+    setSectionInputs((prevState) => {
+      const newState = [...prevState];
+      newState[sectionIndex] = (newState[sectionIndex] || '') + 'Input Field '; // Customize this as needed
+      return newState;
+    });
+  };
+
   return (
-    <div style={{ backgroundColor: 'pink', height: 360, width: 360 }}>
-      <div style={{ marginTop: 10, alignSelf: 'flex-end', paddingRight: 10 }}>
-        <button onClick={onAddSection}>Add Section</button>
-        <button onClick={onDeleteComponent}>Delete Component</button>
-      </div>
-      <div style={{ textAlign: 'center' }}>Component {component.index}</div>
-      {component.sections.map((_, sectionIndex) => (
-        <div key={sectionIndex} style={{ marginTop: 10, padding: 5, border: '1px solid #ddd' }}>
-          Section {sectionIndex + 1}
-          <button onClick={() => onDeleteSection(sectionIndex)}>Delete Section</button>
-        </div>
-      ))}
+    // <div style={{  height: 360, width: 360 , borderRadius: 10 , borderWidth: 5, borderColor: 'red' , backgroundColor: 'pink' ,margin: 20}}>
+    //   <div style={{ marginTop: 10, alignSelf: 'flex-end', paddingRight: 10 , alignItems:"flex-end"}}>
+    //     <button onClick={onAddSection}>Add Section</button>
+    //     {/* <button onClick={onDeleteComponent}>Delete Component</button> */}
+    //     <Close style={{marginLeft: 220}} onClick={onDeleteComponent}/>
+    //   </div>
+    //   <div style={{ textAlign: 'center' }}>Component {component.index}</div>
+    //   {component.sections.map((_, sectionIndex) => (
+    //     <div key={sectionIndex} style={{ marginTop: 10, padding: 5, border: '1px solid #ddd' }}>
+    //       Section {sectionIndex + 1}
+    //       {/* <button onClick={() => onDeleteSection(sectionIndex)}>Delete Section</button> */}
+    //       <Delete onClick={() => onDeleteSection(sectionIndex)}/>
+    //     </div>
+    //   ))}
+    // </div>
+    <div
+    style={{
+      height: 360,
+      width: 360,
+      borderRadius: 10,
+      borderWidth: 5,
+      borderColor: 'red',
+      backgroundColor: 'pink',
+      margin: 20,
+    }}
+  >
+    <div style={{ marginTop: 10, alignSelf: 'flex-end', paddingRight: 10, alignItems: 'flex-end' }}>
+      <button onClick={onAddSection}>Add Section</button>
+      <Close style={{ marginLeft: 220 }} onClick={onDeleteComponent} />
     </div>
+    <div style={{ textAlign: 'center' }}>Component {component.index}</div>
+    {component.sections.map((_, sectionIndex) => (
+      <div key={sectionIndex} style={{ marginTop: 4, padding: 5, border: '1px solid #ddd' }}>
+        <div style={{backgroundColor: 'grey', borderRadius: 10 , height: '80px' }}>
+          <text style={{fontFamily: 'sans-serif', fontSize: 12}}>Section {sectionIndex + 1}</text>
+          <Close style={{marginLeft:250,height : 18 , width: 18 , marginTop: 5 }} onClick={() => onDeleteSection(sectionIndex)}>Delete Section</Close>
+        </div>
+
+        {/* <div>
+          {sectionInputs[sectionIndex]}
+          <button onClick={() => handleAddInputField(sectionIndex)}>Add Input Field</button>
+        </div> */}
+      </div>
+    ))}
+  </div>
   );
-};                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+};
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 
 
 const HomePage = () => {
+
   const [components, setComponents] = useState<ComponentType[]>([{ index: 1, sections: [] }]);
 
   const addComponent = () => {
@@ -60,7 +116,8 @@ const HomePage = () => {
   };
 
   return (
-    <div style={{ backgroundColor: '#a4a4a4', flex: 1 }}>
+    <div style={{ backgroundColor:'#ffffff', flex: 1 }}>
+      <button style={{alignSelf:'flex-end',}} onClick={addComponent}>Add component</button>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '20px' }}>
         {components.map((component, componentIndex) => (
           <Component
@@ -72,7 +129,6 @@ const HomePage = () => {
           />
         ))}
       </div>
-      <button onClick={addComponent}>Add another component</button>
     </div>
   );
 };
