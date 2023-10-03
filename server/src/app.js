@@ -57,6 +57,8 @@ app.post("/createUser", async (req, res) => {
       email: req.body.email,
       phoneNumber: req.body.phoneNumber,
       address: req.body.address,
+      componentId: req.body.componentId,
+      sectionId:req.body.sectionId
       // You can include image handling code here if needed
     };
 

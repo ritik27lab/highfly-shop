@@ -28,9 +28,18 @@ const usersSchema = new mongoose.Schema({
     type: String,
     // required: true,
   },
-  image: {
-    type: String,
+  
+  // image: {
+  //   type: String,
+  // },
+  // activationId:{
+  //   type: String,
+  // }
+  componentId:{
+    type: Number,
   },
+  sectionId: {
+     type: Number,  }
 });
 
 const User = new mongoose.model("User", usersSchema);
