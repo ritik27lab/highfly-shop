@@ -6,24 +6,21 @@ import './Product.css';
 import axios from 'axios';
 import './Product.css';
 
-// Define interfaces for Section and ComponentType
-interface Section {
-  id: number;
-}
 
-interface ComponentType {
-  index: number;
-  sections: Section[];
-}
 
-// Component for each ComponentType
 const Component = ({
   component,
   onDeleteComponent,
   onAddSection,
   onDeleteSection,
 }: {
-  component: ComponentType;
+  component: {
+    index: number;
+    sections: {
+      name: string;
+      studentList: { name: string }[];
+    }[];
+  };
   onDeleteComponent: () => void;
   onAddSection: () => void;
   onDeleteSection: (sectionIndex: number) => void;
@@ -57,16 +54,21 @@ const Component = ({
   };
 
   // Function to handle form submission
-  const handleSubmit = async () => {
-  console.log("--->>>",  "class"+component.index, "section"+component.sections.length,)
+  const handleSubmit = async (componentIndex: number, sectionIndex: number) => {
+ 
+     component.sections[sectionIndex]?.studentList?.push({
+      name: formData.name,
+    });
+
+    console.log('CCOCOCOCO', component)
+
     const formDataWithIds = {
       ...formData,
       componentId: component.index,
       sectionId: component.sections.length,
     };
-
     axios
-      .post('http://localhost:8000/createUser', formDataWithIds)
+      .post('http://localhost:8000/createUser', formData)
       .then((response) => {
         // Handle the response from the server if needed
         console.log('Response from server:', response.data);
@@ -90,7 +92,9 @@ const Component = ({
       });
   };
 
-  return (
+  // console.log("COMPOJENTS", JSON.stringify(component)
+
+   return (
     <div
       style={{
         height: '100%',
@@ -106,12 +110,12 @@ const Component = ({
         {/* Close button for deleting the component */}
         <Close style={{ marginLeft: 220 }} onClick={onDeleteComponent} />
       </div>
-      <div style={{ textAlign: 'center' }}>Component {component.index}</div>
+      <div style={{ textAlign: 'center' }}>Component Id:{component.index}</div>
 
-      {component.sections.map((_, sectionIndex) => (
+      {component.sections.map((section, sectionIndex) => (
         <div key={sectionIndex} style={{ marginTop: 4, padding: 5 }}>
           <div style={{ backgroundColor: '#ffffff', borderRadius: 10 }}>
-            <text style={{ fontFamily: 'sans-serif', fontSize: 12 }}>Section {sectionIndex + 1}</text>
+            <text style={{ fontFamily: 'sans-serif', fontSize: 12 }}>{section.name}</text>
             {/* Delete button for deleting a section */}
             <Delete
               style={{ marginLeft: 250, height: 18, width: 18, marginTop: 5 }}
@@ -122,11 +126,15 @@ const Component = ({
             {/* Button to open the form modal */}
             <Button onClick={openFormModal} style={{ alignSelf: 'flex-start', marginLeft: 250, height: 65 }} />
           </div>
+          {/* Render the student list */}
+          {/* {section.studentList.map((student, studentIndex) => (
+            <div key={studentIndex}>{student.name}</div>
+          ))} */}
         </div>
       ))}
 
       {/* Form modal */}
-      {isFormModalOpen && (
+       {isFormModalOpen && (
         <div className="form-modal">
           <h2>Form Modal</h2>
           <form>
@@ -150,7 +158,7 @@ const Component = ({
             />
             <br />
             {/* Button to submit the form */}
-            <button type="button" onClick={handleSubmit} className='submit-button'>
+            <button type="button" onClick={()=>handleSubmit(component.index,component.sections.length)} className='submit-button'>
               Submit
             </button>
           </form>
@@ -166,71 +174,96 @@ const Component = ({
 
 // HomePage component
 const HomePage = () => {
-  // State for components
-  const [components, setComponents] = useState<ComponentType[]>([{ index: 1, sections: [] }]);
+  const [treeData, setTreeData] = useState({
+    classList: [
+      {
+        name: "Component 1",
+        sectionList: [
+          { name: "Section 1", studentList: [] },
+          { name: "Section 2", studentList: [] },
+        ],
+      },
+      {
+        name: "Component 2",
+        sectionList: [{ name: "Section 1", studentList: [] }],
+      },
+    ],
+  });
 
   // Function to add a new component
   const addComponent = () => {
-    const newIndex = components.length + 1;
-    setComponents([...components, { index: newIndex, sections: [] }]);
+    const newComponent = {
+      name: `Component ${treeData.classList.length + 1}`,
+      sectionList: [],
+    };
+    setTreeData({
+      classList: [...treeData.classList, newComponent],
+    });
   };
 
+  console.log('TREEEDATA', treeData)
   // Function to add a new section to a component
   const addSection = (componentIndex: number) => {
-    const updatedComponents = [...components];
-    const sections = updatedComponents[componentIndex].sections;
-
-    // Check if the sections length is already 3, and if so, display an alert and return early
-    // if (sections.length >= 3) {
-    //   alert("You can't add more than 3 sections. Buy premium to get access to unlimited sections");
-    //   return;
-    // }
-    const newSection = { id: Date.now() };
-    sections.push(newSection);
-    setComponents(updatedComponents);
+    const newSection = {
+      name: `Section ${treeData.classList[componentIndex].sectionList.length + 1}`,
+      studentList: [],
+    };
+    const updatedTreeData = { ...treeData };
+    updatedTreeData.classList[componentIndex].sectionList.push(newSection);
+    setTreeData(updatedTreeData);
   };
 
   // Function to delete a component
   const deleteComponent = (componentIndex: number) => {
-    const updatedComponents = components.filter((_, index) => index !== componentIndex);
-    setComponents(updatedComponents);
+    const updatedTreeData = { ...treeData };
+    updatedTreeData.classList.splice(componentIndex, 1);
+    setTreeData(updatedTreeData);
   };
 
   // Function to delete a section from a component
   const deleteSection = (componentIndex: number, sectionIndex: number) => {
-    const updatedComponents = [...components];
-    updatedComponents[componentIndex].sections.splice(sectionIndex, 1);
-    setComponents(updatedComponents);
+    const updatedTreeData = { ...treeData };
+    updatedTreeData.classList[componentIndex].sectionList.splice(sectionIndex, 1);
+    setTreeData(updatedTreeData);
   };
 
+
+
   return (
-    <div style={{ backgroundColor: '#ffffff', flex: 1 }}>
+    <div style={{ backgroundColor: "#ffffff", flex: 1 }}>
       {/* Button to add a new component */}
-      <button style={{ alignSelf: 'flex-end' }} onClick={addComponent}>
+      <button style={{ alignSelf: "flex-end" }} onClick={addComponent}>
         Add component
       </button>
 
       <div
         style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))',
-          gap: '20px',
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))",
+          gap: "20px",
         }}
       >
         {/* Render components */}
-        {components.map((component, componentIndex) => (
+        {treeData.classList.map((component, componentIndex) => (
           <Component
             key={componentIndex}
-            component={component}
+            component={{
+              // index: componentIndex + 1, // Assuming you want to display an index for each component
+              index: Math.trunc(Math.random()*10000000000), // Assuming you want to display an index for each component
+              sections: component.sectionList,
+            }}
             onDeleteComponent={() => deleteComponent(componentIndex)}
             onAddSection={() => addSection(componentIndex)}
-            onDeleteSection={(sectionIndex) => deleteSection(componentIndex, sectionIndex)}
+            onDeleteSection={(sectionIndex) =>
+              deleteSection(componentIndex, sectionIndex)
+            }
           />
         ))}
       </div>
     </div>
   );
 };
+
 
 export default HomePage;
 

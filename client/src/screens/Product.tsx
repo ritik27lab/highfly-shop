@@ -43,6 +43,8 @@ function Product() {
     };
     const navigateToCart = () => {
         console.log("Pressed")
+        navigate('/Cart')
+
     }
 
 

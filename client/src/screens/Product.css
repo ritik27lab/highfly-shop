@@ -75,9 +75,10 @@
     background-color: #007bff;
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 8px 15px;
     border-radius: 5px;
-    cursor: pointer;
+    margin-bottom:10px ;
+    cursor: crosshair;
     font-size: 16px;
   }
   
